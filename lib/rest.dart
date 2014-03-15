@@ -6,7 +6,7 @@ class Rest {
 
   RestResponse verb(method) {
     if(!verbs.containsKey(method))
-      throw new NoSuchVerbException('No such verb: $method.');
+      throw new NoSuchVerbException(method);
     return verbs[method]();
   }
 
@@ -32,5 +32,7 @@ abstract class Verb {
 }
 
 class NoSuchVerbException implements Exception {
-  NoSuchVerbException(msg);
+  NoSuchVerbException(verb) {
+    print('No such verb: $verb');
+  }
 }

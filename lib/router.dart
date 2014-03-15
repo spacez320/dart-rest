@@ -43,18 +43,15 @@ class Router {
             return resolveRoutes(routes[route],
                 request_uri.substring(route.firstMatch(request_uri).end));
           }
-        } else {
-          return false;
         }
       }
+      return false;
     }
 
     var route_action = resolveRoutes(routes, request_uri);
     if(route_action is Function) {
       return route_action;
-    } else {
-      return false;
-    }
+    } else throw new RouteNotFoundException(request_uri);
   }
 
   // main routing function, returns response data
@@ -64,5 +61,11 @@ class Router {
     var output = action();
 
     return output;
+  }
+}
+
+class RouteNotFoundException implements Exception {
+  RouteNotFoundException(route) {
+    print('Could not find route: $route');
   }
 }

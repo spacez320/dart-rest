@@ -27,27 +27,27 @@ class RestServer {
     HttpServer.bind(listen_address, listen_port).then((server) {
       server.listen((HttpRequest request) {
 
+        int returnCode;
+        String returnBody;
+        HttpRestResponse response;
+        Function route_action;
+
         logger.log('[REQUEST]: ${request.uri.path}');
 
-        HttpRestResponse response = null;
-        var route_action = router.resolve(request.uri.path);
+        try {
+          route_action = router.resolve(request.uri.path);
+          response = route_action(request);
+          returnCode = response.code;
+          returnBody = response.body;
+        } on RouteNotFoundException {
+          returnCode = HttpStatus.NOT_FOUND;
+        } finally {
+          logger.log('[RESPONSE]: $returnCode, $returnBody');
 
-        if(route_action == false) {
-          request.response
-            ..statusCode = HttpStatus.NOT_FOUND
-            ..close();
-
-          logger.log('[RESPONSE]: ${request.response.statusCode}');
-          return;
+          request.response.statusCode = returnCode;
+          if( returnBody != null) request.response.write(returnBody);
+          request.response.close();
         }
-
-        response = route_action(request);
-
-        request.response.statusCode = response.code;
-        if( response.body != null) request.response.write(response.body);
-        request.response.close();
-
-        logger.log('[RESPONSE]: ${response.code}, ${response.body}');
       });
     });
 
