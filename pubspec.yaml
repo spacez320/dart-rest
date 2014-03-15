@@ -1,0 +1,3 @@
+name: rest
+description: A REST server implementation.
+dependencies:
