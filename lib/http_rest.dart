@@ -28,8 +28,6 @@ class HttpRest implements Rest {
   HttpRestResponse resolve(HttpRequest request) {
 
     Function route_action;
-    int returnCode;
-    String returnBody;
     HttpRestResponse response_data;
 
     route_action = this.rest_router.resolve(request.uri.path);
@@ -37,7 +35,7 @@ class HttpRest implements Rest {
 
     request.response
       ..statusCode = response_data.code
-      ..write(returnBody != null ? returnBody : '')
+      ..write(response_data.body != null ? response_data.body : '')
       ..close();
   }
 }
