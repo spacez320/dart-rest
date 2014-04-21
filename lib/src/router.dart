@@ -33,7 +33,9 @@ class Router {
 
   // resolves a request_uri against a route map
   Function resolve(request_uri) {
+
     dynamic resolveRoutes(routes, request_uri) {
+
       request_uri = request_uri.replaceFirst(new RegExp(r'/'), '');
       for(var route in routes.keys) {
         if(route.hasMatch(request_uri)) {
@@ -45,10 +47,11 @@ class Router {
           }
         }
       }
+
       return false;
     }
 
-    var route_action = resolveRoutes(routes, request_uri);
+    var route_action = resolveRoutes(this.routes, request_uri);
     if(route_action is Function) {
       return route_action;
     } else throw new RouteNotFoundException(request_uri);

@@ -1,6 +1,12 @@
 part of rest;
 
-class Rest {
+// top level rest object
+abstract class Rest {
+  RestResponse resolve(HttpRequest request);
+}
+
+// represents an endpoint in a rest request hierarchy
+abstract class RestRoute {
 
   Map<String,Verb> verbs;
 
@@ -13,10 +19,12 @@ class Rest {
   RestResponse call(request);
 }
 
+// response data from a rest request
 abstract class RestResponse {
-  void build();
+  void build(dynamic response);
 }
 
+// represents a rest verb that provides data for a valid request
 abstract class Verb {
 
   Function callback;
@@ -31,6 +39,7 @@ abstract class Verb {
   }
 }
 
+// called when attempting to map an undefined verb
 class NoSuchVerbException implements Exception {
   NoSuchVerbException(verb) {
     print('No such verb: $verb');
