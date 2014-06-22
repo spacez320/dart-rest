@@ -11,19 +11,42 @@ class HttpRest implements Rest {
 
   Router rest_router;
 
+  /* response constants */
+
   // 200's
+
+  static HttpRestResponse OK() =>
+    new HttpRestREsponse().build(HttpStatus.OK);
+
+  static HttpRestResponse CREATED() =>
+    new HttpRestREsponse().build(HttpStatus.CREATED);
 
   static HttpRestResponse NO_CONTENT() =>
     new HttpRestResponse().build(HttpStatus.NO_CONTENT);
 
   // 400's
 
+  static HttpRestResponse UNAUTHORIZED() =>
+    new HttpRestResponse().build(HttpStatus.UNAUTHORIZED);
+
   static HttpRestResponse METHOD_NOT_ALLOWED() =>
     new HttpRestResponse().build(HttpStatus.METHOD_NOT_ALLOWED);
+
+  static HttpRestResponse NOT_FOUND() =>
+    new HttpRestResponse().build(HttpStatus.NOT_FOUND);
+
+  // 500's
+
+  static HttpRestResponse NOT_IMPLEMENTED() =>
+    new HttpRestResponse().build(HttpStatus.NOT_IMPLEMENTED);
+
+  /* constructors */
 
   HttpRest(routes) {
     this.rest_router = new Router(routes);
   }
+
+  /* methods */
 
   HttpRestResponse resolve(HttpRequest request) {
 

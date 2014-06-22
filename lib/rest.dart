@@ -32,7 +32,7 @@ abstract class Verb {
   Verb(callback) {
     this.callback = callback is Function ?
       callback : () { return callback; };
-  };
+  }
 
   String call() {
     return this.callback();
