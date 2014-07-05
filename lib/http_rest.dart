@@ -1,61 +1,81 @@
-library rest;
+part of rest;
 
-import 'dart:io' show HttpStatus, HttpRequest;
-import 'dart:async' show Future, getFuture;
 
-part 'src/router.dart';
-part 'rest.dart';
-
-// http rest server
+/**
+ * An HTTP REST server.
+ */
 class HttpRest implements Rest {
 
+  /// the routing engine
   Router rest_router;
 
-  /* response constants */
+  /* 200's */
 
-  // 200's
-
+  /**
+   *  Returns HTTP 200 OK
+   */
   static HttpRestResponse OK() =>
     new HttpRestREsponse().build(HttpStatus.OK);
 
+  /**
+   *  Returns HTTP 201 Created
+   */
   static HttpRestResponse CREATED() =>
     new HttpRestREsponse().build(HttpStatus.CREATED);
 
+  /**
+   *  Returns HTTP 204 No Content
+   */
   static HttpRestResponse NO_CONTENT() =>
     new HttpRestResponse().build(HttpStatus.NO_CONTENT);
 
-  // 400's
+  /* 400's */
 
+  /**
+   *  Returns HTTP 401 Unauthorized
+   */
   static HttpRestResponse UNAUTHORIZED() =>
     new HttpRestResponse().build(HttpStatus.UNAUTHORIZED);
 
+  /**
+   *  Returns HTTP 405 Method Not Allowed
+   */
   static HttpRestResponse METHOD_NOT_ALLOWED() =>
     new HttpRestResponse().build(HttpStatus.METHOD_NOT_ALLOWED);
 
+  /**
+   *  Returns HTTP 404 Not Found
+   */
   static HttpRestResponse NOT_FOUND() =>
     new HttpRestResponse().build(HttpStatus.NOT_FOUND);
 
-  // 500's
+  /* 500's */
 
+  /**
+   *  Returns HTTP 501 Not Implemented
+   */
   static HttpRestResponse NOT_IMPLEMENTED() =>
     new HttpRestResponse().build(HttpStatus.NOT_IMPLEMENTED);
 
-  /* constructors */
-
+  /**
+   *  Constructs an HttpRest object from provided routes.
+   */
   HttpRest(routes) {
     this.rest_router = new Router(routes);
   }
 
-  /* methods */
-
+  /**
+   *  Resolves an HTTP Rest Request.
+   */
   HttpRestResponse resolve(HttpRequest request) {
 
-    Function route_action;
-    HttpRestResponse response_data;
+    // resolve the action
+    var route_action = this.rest_router.resolve(request.uri.path);
 
-    route_action = this.rest_router.resolve(request.uri.path);
-    response_data = route_action(request);
+    // perform the action and generate the response
+    var response_data = route_action(request);
 
+    // populate the request response object with data
     request.response
       ..statusCode = response_data.code
       ..write(response_data.body != null ? response_data.body : '')
@@ -63,9 +83,12 @@ class HttpRest implements Rest {
   }
 }
 
-// http rest verb definitions and responses
+/**
+ * An HTTP REST route using available HTTP methods.
+ */
 class HttpRestRoute extends RestRoute {
 
+  /// map of HTTP verbs and verb handlers
   Map<String,Verb> verbs = {
     'OPTIONS':  null,
     'GET':      null,
@@ -77,14 +100,26 @@ class HttpRestRoute extends RestRoute {
     'CONNECT':  null
   };
 
+  /**
+   * Constructs an HTTP REST route given a verb function map.
+   */
   HttpRestRoute(this.verbs);
 
+  /**
+   * Provides a response, given an HTTP REST request.
+   */
   HttpRestResponse call(request) {
-    HttpRestResponse response = null;
 
+    var response = null;
+
+    // attempt to execute the verb, given the request method
     try {
+
+      // populate the response from the verb callback
       response = verb(request.method);
     } on NoSuchVerbException {
+
+      // respond to an unimplemented verb
       response = HttpRest.METHOD_NOT_ALLOWED();
     }
 
@@ -92,12 +127,21 @@ class HttpRestRoute extends RestRoute {
   }
 }
 
-// http rest response
+/**
+ * A response to an HTTP REST request.
+ */
 class HttpRestResponse implements RestResponse {
-  int code;
-  String body;
-  Map headers;
 
+  /// HTTP response code
+  final int code;
+  /// HTTP response body (should be optional)
+  final String body;
+  /// additional HTTP headers (should be optional)
+  final Map headers;
+
+  /**
+   * Generates an HTTP REST response.
+   */
   HttpRestResponse build(int code, [String body, Map headers]) {
     this.code = code;
     if(body != null) this.body = body;
@@ -107,11 +151,7 @@ class HttpRestResponse implements RestResponse {
   }
 }
 
-// http verb
-class HttpVerb implements Verb {
-
-  Function callback;
-
-  String call() => this.callback();
-}
-
+/**
+ * An HTTP REST verb handler for a request route.
+ */
+typedef Verb HttpVerb();

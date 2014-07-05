@@ -1,47 +1,81 @@
-part of rest;
+library rest;
 
-// top level rest object
+import 'dart:io' show HttpStatus, HttpRequest;
+import 'dart:async' show Future, getFuture;
+
+part 'src/router.dart';
+part 'http_rest.dart';
+
+
+/**
+ * A REST server.
+ */
 abstract class Rest {
-  RestResponse resolve(HttpRequest request);
+
+  /**
+   *  Resolves a REST request.
+   */
+  RestResponse resolve(request);
 }
 
-// represents an endpoint in a rest request hierarchy
+/**
+ * A REST route using available methods.
+ */
 abstract class RestRoute {
 
+  /// map of verbs and verb handlers
   Map<String,Verb> verbs;
 
+  /**
+   * Gets a verb from current verbs given a method name.
+   */
   RestResponse verb(method) {
     if(!verbs.containsKey(method))
       throw new NoSuchVerbException(method);
     return verbs[method]();
   }
 
+  /**
+   * Provides a response, given an REST request.
+   */
   RestResponse call(request);
 }
 
-// response data from a rest request
+/**
+ * A response to a REST request.
+ */
 abstract class RestResponse {
+  /**
+   * Generates a REST response.
+   */
   void build(dynamic response);
 }
 
-// represents a rest verb that provides data for a valid request
+/**
+ * A REST verb handler for a request route.
+ */
 abstract class Verb {
 
-  Function callback;
+  /// Response handler for this verb.
+  final Function callback;
 
+  /// Constructor that produces the verb action.
   Verb(callback) {
     this.callback = callback is Function ?
       callback : () { return callback; };
   }
 
-  String call() {
-    return this.callback();
-  }
+  /**
+   * Calls the response handler.
+   */
+  String call() => this.callback();
 }
 
-// called when attempting to map an undefined verb
+/**
+ * Exception when defining verb mappings for nonexistent methods.
+ */
 class NoSuchVerbException implements Exception {
-  NoSuchVerbException(verb) {
-    print('No such verb: $verb');
+  NoSuchMethodException(method) {
+    print('No such method: $method');
   }
 }
