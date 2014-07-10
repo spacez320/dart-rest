@@ -71,11 +71,11 @@ Generally, this involves three steps.
 
 ```dart
       fooBar() {
-        return new HttpResponse().build(200, 'fooBar!\n");
+        return new HttpResponse().build(200, 'fooBar!\n');
       }
 
       fooBat() {
-        return new HttpResponse().build(502, 'fooBat!\n");
+        return new HttpResponse().build(502, 'fooBat!\n');
       }
 ```
 
