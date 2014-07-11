@@ -88,6 +88,33 @@ Generally, this involves four steps.
 
 See `example/example-rest.dart` for a more in-depth, working example.
 
+### On Endpoint Functions
+
+Notice that the examples above are building `HttpRestResponse` objects.
+Your endpoint functions can;
+
+-   also do this,
+
+```dart
+        myEndpoint() { return new HttpRestResponse().build(
+          200, "stuff and things\n"); }
+```
+
+-   return a `Map` with associated fields that will automatically build an
+    `HttpRestResponse` object for you,
+
+```dart
+        myEndPoint() { return { 'code': 200, 'body': "stuff and things\n" }; }
+```
+
+-   or return anything else, in which case the return object's `.toString()`
+    method is used to generate the body and the response code is set to `200`
+
+```dart
+        myEndPoint() { return "stuff and things\n"; }
+```
+
+
 Extending REST
 --------------
 

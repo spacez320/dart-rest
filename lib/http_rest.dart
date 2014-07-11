@@ -74,16 +74,44 @@ class HttpRest implements Rest {
    */
   HttpRestResponse resolve(HttpRequest request) {
 
+    /// the response object to be returned
+    var _live_response = null;
+
+    /// default response data
+    var _response_data = {
+      'code'    : 200,
+      'body'    : null,
+      'headers' : null,
+    };
+
     // resolve the action
-    var route_action = this.rest_router.resolve(request.uri.path);
+    var _route_action = this.rest_router.resolve(request.uri.path);
 
     // perform the action and generate the response
-    var response_data = route_action(request);
+    var _response = _route_action(request);
+
+    if(_response is HttpRestResponse) {
+      // looks like the response is already prepared
+      _live_response = _response;
+    } else {
+      // response is some other type of value
+      if(_response is Map) {
+        _response_data.addAll(_response);
+      } else {
+        _response_data['body'] = _response.toString();
+      }
+
+      _live_response = new HttpRestResponse().build(
+        _response_data['code'],
+        _response_data['body'],
+        _response_data['headers']
+      );
+    }
 
     // populate the request response object with data
     request.response
-      ..statusCode = response_data.code
-      ..write(response_data.body != null ? response_data.body : '')
+      ..statusCode = _live_response.code
+      ..write(_live_response.body != null ? _live_response.body : '')
       ..close();
   }
 }
@@ -138,11 +166,11 @@ class HttpRestRoute extends RestRoute {
 class HttpRestResponse implements RestResponse {
 
   /// HTTP response code
-  final int code;
+  int code;
   /// HTTP response body (should be optional)
-  final String body;
+  String body;
   /// additional HTTP headers (should be optional)
-  final Map headers;
+  Map headers;
 
   /**
    * Generates an HTTP REST response.
