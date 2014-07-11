@@ -1,4 +1,9 @@
-part of rest;
+library http_rest;
+
+import 'dart:io' show HttpStatus, HttpRequest;
+import 'rest.dart' show Rest, RestRoute, RestResponse, Verb;
+
+part 'src/router.dart';
 
 
 /**

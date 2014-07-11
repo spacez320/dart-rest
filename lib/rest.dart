@@ -4,7 +4,6 @@ import 'dart:io' show HttpStatus, HttpRequest;
 import 'dart:async' show Future, getFuture;
 
 part 'src/router.dart';
-part 'http_rest.dart';
 
 
 /**

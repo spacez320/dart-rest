@@ -22,9 +22,16 @@ creating an `HttpRest` handler. The `HttpRest` handler itself is instantiated
 by a route map that you generate and provide, with endpoints that you generate
 and provide.
 
-Generally, this involves three steps.
+Generally, this involves four steps.
 
-- Firstly; building the routes.
+- Firstly; importing the library.
+
+```dart
+        import 'rest:rest/http_rest.dart' show
+          HttpRest, HttpRestRoute, HttpRestResponse, RouteNotFoundException;
+```
+
+- Secondly; building the routes.
 
 ```dart
       // keys are regular expressions
@@ -43,7 +50,7 @@ Generally, this involves three steps.
       HttpRest rest = new HttpRest(routes);
 ```
 
-- Secondly; creating the server and adding the resolve action.
+- Thirdly; creating the server and adding the resolve action.
 
 ```dart
       HttpServer.bind('0.0.0.0', 8000),then((server) {
@@ -67,15 +74,15 @@ Generally, this involves three steps.
       });
 ```
 
-- Thirdly; defining your end-point functions.
+- Fourthly; defining your end-point functions.
 
 ```dart
       fooBar() {
-        return new HttpResponse().build(200, 'fooBar!\n');
+        return new HttpRestResponse().build(200, 'fooBar!\n');
       }
 
       fooBat() {
-        return new HttpResponse().build(502, 'fooBat!\n');
+        return new HttpRestResponse().build(502, 'fooBat!\n');
       }
 ```
 
@@ -88,6 +95,8 @@ Extensible classes exist to create your own REST interfaces, HTTP based or
 otherwise. Doing so is a matter of defining what verbs you want to use.
 
 ```dart
+    import "package:rest/rest.dart" show Rest, RestRoute;
+
     class YodaRest implements Rest {
       // ...
     }
