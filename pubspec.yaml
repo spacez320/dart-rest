@@ -1,5 +1,5 @@
 name: rest
-version: 0.1.6-alpha
+version: 0.1.7-alpha
 description: >
   This is a helper for creating RESTful applications. It also comes equipped
   with an implementation for HTTP REST.
