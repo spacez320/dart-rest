@@ -1,10 +1,10 @@
 library http_rest;
 
 import 'dart:io' show HttpStatus, HttpRequest;
-import 'rest.dart' show Rest, RestRoute, RestResponse, Verb;
+import 'rest.dart' show
+  Rest, RestRoute, RestResponse, Verb, NoSuchVerbException;
 
 part 'src/router.dart';
-
 
 /**
  * An HTTP REST server.
@@ -20,13 +20,13 @@ class HttpRest implements Rest {
    *  Returns HTTP 200 OK
    */
   static HttpRestResponse OK() =>
-    new HttpRestREsponse().build(HttpStatus.OK);
+    new HttpRestResponse().build(HttpStatus.OK);
 
   /**
    *  Returns HTTP 201 Created
    */
   static HttpRestResponse CREATED() =>
-    new HttpRestREsponse().build(HttpStatus.CREATED);
+    new HttpRestResponse().build(HttpStatus.CREATED);
 
   /**
    *  Returns HTTP 204 No Content
@@ -139,24 +139,31 @@ class HttpRestRoute extends RestRoute {
   HttpRestRoute(this.verbs);
 
   /**
+   *  Constructs an HTTP REST route from a given endpoint.
+   */
+  HttpRestRoute.fromEndpoint(Function endpoint) : this({ 'GET': endpoint });
+
+  /**
    * Provides a response, given an HTTP REST request.
    */
   HttpRestResponse call(request) {
 
-    var response = null;
+    var _response = null;
 
     // attempt to execute the verb, given the request method
     try {
 
       // populate the response from the verb callback
-      response = verb(request.method);
+      _response = verb(request.method);
+
     } on NoSuchVerbException {
 
       // respond to an unimplemented verb
-      response = HttpRest.METHOD_NOT_ALLOWED();
+      _response = HttpRest.METHOD_NOT_ALLOWED();
+
     }
 
-    return response;
+    return _response;
   }
 }
 

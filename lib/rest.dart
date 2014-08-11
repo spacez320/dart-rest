@@ -74,7 +74,7 @@ abstract class Verb {
  * Exception when defining verb mappings for nonexistent methods.
  */
 class NoSuchVerbException implements Exception {
-  NoSuchMethodException(method) {
-    print('No such method: $method');
-  }
+  final String msg;
+  const NoSuchVerbException ([this.msg]);
+  String toString() => "No such method ${msg}";
 }

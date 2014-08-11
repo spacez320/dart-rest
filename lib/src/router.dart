@@ -1,6 +1,5 @@
 part of rest;
 
-
 /**
  * A route manager for resolving URLs to functional endpoints.
  */
@@ -22,26 +21,24 @@ class Router {
   Map compile(route_map) {
 
     // resultant compiled route object
-    var compiled_routes = {};
+    var _compiled_routes = {};
 
     // loop over given routes in map and compile them
-    var next_route_regexp = null;
-    var next_route_val = null;
+    var _next_route_regexp = null;
+    var _next_route_val = null;
     for(var route in route_map.keys) {
-      next_route_regexp = new RegExp(route);
+      _next_route_regexp = new RegExp(route);
 
       // recurse if child is also a route map, or provide the value as
       // the route endpoint
-      next_route_val = route_map[route] is Map ?
-        compile(route_map[route]) :
-        route_map[route];
+      _next_route_val = route_map[route] is Map ?
+        compile(route_map[route]) : route_map[route];
 
       // set the next compiled route
-      compiled_routes[next_route_regexp] =
-        next_route_val;
+      _compiled_routes[_next_route_regexp] = _next_route_val;
     }
 
-    return compiled_routes;
+    return _compiled_routes;
   }
 
   /**
@@ -55,19 +52,19 @@ class Router {
     dynamic resolveRoutes(routes, request_uri) {
 
       // remove the leading slash
-      request_uri = request_uri.replaceFirst(new RegExp(r'/'), '');
+      var _request_uri = request_uri.replaceFirst(new RegExp(r'/'), '');
 
       for(var route in routes.keys) {
 
         // find a match in the given routes
-        if(route.hasMatch(request_uri)) {
+        if(route.hasMatch(_request_uri)) {
 
           // return discovered endpoints, else continue to search
           if(routes[route] is Function) {
             return routes[route];
           } else {
             return resolveRoutes(routes[route],
-                request_uri.substring(route.firstMatch(request_uri).end));
+              _request_uri.substring(route.firstMatch(_request_uri).end));
           }
         }
       }
@@ -77,11 +74,11 @@ class Router {
     }
 
     // resolve the route
-    var route_action = resolveRoutes(this.routes, request_uri);
+    var _route_action = resolveRoutes(this.routes, request_uri);
 
     // determine if the endpoint is actionable
-    if(route_action is Function) {
-      return route_action;
+    if(_route_action is Function) {
+      return _route_action;
     } else throw new RouteNotFoundException(request_uri);
   }
 
