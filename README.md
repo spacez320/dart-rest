@@ -27,8 +27,7 @@ Generally, this involves four steps.
 - Firstly; importing the library.
 
 ```dart
-        import 'rest:rest/http_rest.dart' show
-          HttpRest, HttpRestRoute, HttpRestResponse, RouteNotFoundException;
+        import 'rest:rest/http_rest.dart' show HttpRest, HttpRestRoute;
 ```
 
 - Secondly; building the routes.
@@ -64,10 +63,11 @@ Generally, this involves four steps.
 
           } on RouteNotFoundException {
 
-            // rest.resolve through an exception because it couldn't find
-            // and endpoint with the url
+            // an exception is thrown because it couldn't find an endpoint
 
-            request.response.close();
+            request.response
+              ..status = 404
+              ..close();
 
           }
         });
@@ -88,6 +88,14 @@ Generally, this involves four steps.
 
 See `example/example-rest.dart` for a more in-depth, working example.
 
+### On Routing Maps
+
+The routing map is a tree that represents a URI request. The general structure
+is given below:
+
+    RoutingMap ::= Function
+                 | RoutingMap
+
 ### On Endpoint Functions
 
 Notice that the examples above are building `HttpRestResponse` objects.
@@ -96,15 +104,25 @@ Your endpoint functions can;
 -   also do this,
 
 ```dart
-        myEndpoint() { return new HttpRestResponse().build(
-          200, "stuff and things\n"); }
+        myEndpoint() {
+          var my_response = "stuff and things\n";
+
+          return new HttpRestResponse().build(200, my_response);
+        }
 ```
 
 -   return a `Map` with associated fields that will automatically build an
     `HttpRestResponse` object for you,
 
 ```dart
-        myEndPoint() { return { 'code': 200, 'body': "stuff and things\n" }; }
+        myEndPoint() {
+          var my_response = "stuff and things\n";
+
+          return {
+            'code': 200,
+            'body': my_response
+          };
+        }
 ```
 
 -   or return anything else, in which case the return object's `.toString()`
@@ -115,8 +133,8 @@ Your endpoint functions can;
 ```
 
 
-Extending REST
---------------
+Extending
+---------
 
 Extensible classes exist to create your own REST interfaces, HTTP based or
 otherwise. Doing so is a matter of defining what verbs you want to use.
@@ -152,6 +170,12 @@ https://github.com/spacez320/dart-rest
 If you would like to see continued development on this library, have
 suggestions, or would like to contribute; please feel free to file pull
 requests or contact me directly (through Github).
+
+Tests are in the `/test` folder.
+
+```bash
+    dart test/rest_test.dart
+```
 
 Documentation
 -------------

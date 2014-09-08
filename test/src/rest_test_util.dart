@@ -4,7 +4,7 @@ class RestTestUtil {
 
   static bool returnFalse() => false;
 
-  static String returnHello() => "Hello, world.";
+  static String returnString() => "matched!";
 
   static void throwException() { throw new Exception(); }
 

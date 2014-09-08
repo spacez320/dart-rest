@@ -76,6 +76,8 @@ class HttpRest implements Rest {
 
     /// the response object to be returned
     var _live_response = null;
+    /// the actual response object retrieved
+    var _response = null;
 
     /// default response data
     var _response_data = {
@@ -88,7 +90,11 @@ class HttpRest implements Rest {
     var _route_action = this.rest_router.resolve(request.uri.path);
 
     // perform the action and generate the response
-    var _response = _route_action(request);
+    if(_route_action is HttpRestRoute) {
+      _response = _route_action(request);
+    } else {
+      _response = _route_action();
+    }
 
     if(_response is HttpRestResponse) {
       // looks like the response is already prepared
