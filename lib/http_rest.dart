@@ -140,9 +140,10 @@ class HttpRestRoute extends RestRoute {
   };
 
   /**
-   * Constructs an HTTP REST route given a verb function map.
+   * Constructs an HTTP REST route given a verb function map and optional
+   * routes.
    */
-  HttpRestRoute(this.verbs);
+  HttpRestRoute(this.verbs, [routes]);
 
   /**
    *  Constructs an HTTP REST route from a given endpoint.

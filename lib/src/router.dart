@@ -107,7 +107,7 @@ class Router {
             _request_uri.substring(route.firstMatch(_request_uri).end);
 
           if(routes[route] is Function) {
-            // return the endpoint, or false if the URI isn't fully matched
+            // return the endpoint if the full URI portion is matched
             if(_modified_request.isEmpty) return routes[route];
           } else {
             // continue searching

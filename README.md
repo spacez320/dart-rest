@@ -38,10 +38,14 @@ Generally, this involves four steps.
       var routes = {
         r"^foo": {
           r"^bar$": new HttpRestRoute({
-            'GET': fooBar   // a function called fooBar
+            'GET': fooBar                 // a function called fooBar
+          }, {
+            r"\d+": new HttpRestRoute({
+              'PUT': createFooBar         // a function called createFooBar
+            }),
           }),
           r"^bat$": new HttpRestRoute({
-            'POST': fooBat  // a function called fooBat
+            'POST': fooBat                // a function called fooBat
           })
         }
       }
@@ -81,6 +85,10 @@ Generally, this involves four steps.
         return new HttpRestResponse().build(200, 'fooBar!\n');
       }
 
+      createFooBar() {
+        return new HttpRestResponse().build(204, 'created a fooBar!\n');
+      }
+
       fooBat() {
         return new HttpRestResponse().build(502, 'fooBat!\n');
       }
@@ -93,8 +101,11 @@ See `example/example-rest.dart` for a more in-depth, working example.
 The routing map is a tree that represents a URI request. The general structure
 is given below:
 
-    RoutingMap ::= Function
-                 | RoutingMap
+    <RoutingMap> ::= Function
+                   | HttpRestResponse
+                   | { <Route>, <Route>* }
+
+    <Route> ::= RegExp: <RoutingMap>
 
 ### On Endpoint Functions
 
