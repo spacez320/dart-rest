@@ -59,7 +59,7 @@ class Router {
     var _next_route_regexp = null;
     var _next_route_val = null;
     for(var route in route_map.keys) {
-      _next_route_regexp = new RegExp(route);
+      _next_route_regexp = route == null ? null : new RegExp(route);
 
       // recurse if child is also a route map, or provide the value as
       // the route endpoint
@@ -100,7 +100,7 @@ class Router {
       for(var route in routes.keys) {
 
         // find a match in the given routes
-        if(route.hasMatch(_request_uri)) {
+        if(route != null && route.hasMatch(_request_uri)) {
 
           // process request substring
           _modified_request =
@@ -113,6 +113,8 @@ class Router {
             // continue searching
             return resolveRoutes(routes[route], _modified_request);
           }
+        } else if(route == null && _request_uri.isEmpty) {
+          return routes[null];
         }
       }
 

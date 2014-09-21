@@ -112,11 +112,14 @@ void main() {
           'PUT': () => { 'code': 201, 'body': "called bar!\r\n" },
           'DELETE': () => "called bar!\r\n",
         }),
-        r'^bat': new HttpRestRoute({
-          'GET': HttpRest.OK,
-        }, {
-          r'\d+': () => { 'code': 201, 'body': "requested a bat!\r\n" },
-        }),
+        r'^bat': {
+          r'^bar': {
+            null: new HttpRestRoute({
+              'GET': HttpRest.CREATED,
+            }),
+            r'\d+': () => { 'code': 201, 'body': "requested a bat!\r\n" },
+          }
+        }
       };
 
       test_rest = new HttpRest(test_routes);
@@ -171,13 +174,17 @@ void main() {
           }));
     });
 
-    test('using a nested route', () {
+    test('using a nested and null route', () {
       test_client
         ..get("http://${_test_addr}:${_test_port}/bat")
           .then(expectAsync((response) {
-            expect(response.statusCode, equals(200));
+            expect(response.statusCode, equals(404));
           }))
-        ..get("http://${_test_addr}:${_test_port}/bat/20")
+        ..get("http://${_test_addr}:${_test_port}/bat/bar")
+          .then(expectAsync((response) {
+            expect(response.statusCode, equals(201));
+          }))
+        ..get("http://${_test_addr}:${_test_port}/bat/bar/20")
           .then(expectAsync((response) {
             expect(response.statusCode, equals(201));
             expect(response.body, equals("requested a bat!\r\n"));

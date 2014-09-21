@@ -6,13 +6,17 @@ This Dart library provides two things:
 - an HTTP REST server implementation
 - extensible, generic REST implementation for building REST-ful applications
 
+Most of this documentation describes how to use the HTTP REST server.
+
 Installing
 ----------
 
 Add "rest" as a dependency in your **pubspec.yaml** file, and run `pub
 install`.
 
-More information: https://www.dartlang.org/tools/pub/get-started.html#installing-packages
+More information:
+- https://pub.dartlang.org/packages/rest#installing
+- https://www.dartlang.org/tools/pub/get-started.html#installing-packages
 
 Usage
 -----
@@ -33,23 +37,35 @@ Generally, this involves four steps.
 - Secondly; building the routes.
 
 ```dart
-      // keys are regular expressions
 
+      // keys are regular expressions, or null
       var routes = {
         r"^foo": {
-          r"^bar$": new HttpRestRoute({
-            'GET': fooBar                 // a function called fooBar
-          }, {
+          r"^bar$": {
+
+            // the null key will allow a request for 'foo/bar'
+
+            null: new HttpRestRoute({
+              'GET': fooBar               // a function called fooBar
+            }),
+
+            // this will match PUT requests of form 'foo/bar/\d+'
+
             r"\d+": new HttpRestRoute({
               'PUT': createFooBar         // a function called createFooBar
             }),
+
           }),
+
+          // this will match POST requests of form 'bat'
+
           r"^bat$": new HttpRestRoute({
             'POST': fooBat                // a function called fooBat
           })
         }
       }
 
+      // create the rest object itself
       HttpRest rest = new HttpRest(routes);
 ```
 
@@ -67,7 +83,8 @@ Generally, this involves four steps.
 
           } on RouteNotFoundException {
 
-            // an exception is thrown because it couldn't find an endpoint
+            // an exception is thrown because it couldn't find an endpoint,
+            // at which point you can decide what you want to do
 
             request.response
               ..status = 404
@@ -98,21 +115,31 @@ See `example/example-rest.dart` for a more in-depth, working example.
 
 ### On Routing Maps
 
-The routing map is a tree that represents a URI request. The general structure
-is given below:
+The routing map is a tree that represents a URI request. Below is my attempt
+at EBNF:
 
     <RoutingMap> ::= Function
-                   | HttpRestResponse
+                   | HttpRestRoute
                    | { <Route>, <Route>* }
 
-    <Route> ::= RegExp: <RoutingMap>
+    <Route> ::= <RouteKey>: <RoutingMap>
+
+    <RouteKey> ::= RegExp | null
+
+Some key points:
+
+- Route endpoints can be given Functions directly, in which case they respond
+  to `GET` requests
+- `HttpRestRoute` objects are required to provide different behaviors per
+  HTTP method
+- a Route with children can be matched by using a `null` key
 
 ### On Endpoint Functions
 
 Notice that the examples above are building `HttpRestResponse` objects.
 Your endpoint functions can;
 
--   also do this,
+- also do this,
 
 ```dart
         myEndpoint() {
@@ -122,8 +149,8 @@ Your endpoint functions can;
         }
 ```
 
--   return a `Map` with associated fields that will automatically build an
-    `HttpRestResponse` object for you,
+- return a `Map` with associated fields that will automatically build an
+  `HttpRestResponse` object for you,
 
 ```dart
         myEndPoint() {
@@ -136,8 +163,8 @@ Your endpoint functions can;
         }
 ```
 
--   or return anything else, in which case the return object's `.toString()`
-    method is used to generate the body and the response code is set to `200`
+- or return anything else, in which case the return object's `.toString()`
+  method is used to generate the body and the response code is set to `200`
 
 ```dart
         myEndPoint() { return "stuff and things\n"; }
