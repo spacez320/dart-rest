@@ -90,11 +90,7 @@ class HttpRest implements Rest {
     var _route_action = this.rest_router.resolve(request.uri.path);
 
     // perform the action and generate the response
-    if(_route_action is HttpRestRoute) {
-      _response = _route_action(request);
-    } else {
-      _response = _route_action();
-    }
+    _response = this.act(_route_action, request);
 
     if(_response is HttpRestResponse) {
       // looks like the response is already prepared
@@ -119,6 +115,22 @@ class HttpRest implements Rest {
       ..statusCode = _live_response.code
       ..write(_live_response.body != null ? _live_response.body : '')
       ..close();
+  }
+
+  /**
+   * Wraps route_action calls.
+   */
+  dynamic act(Function route_action, HttpRequest request) {
+    var _response = null;
+
+    // pass the request only if the endpoint wants it
+    try {
+      _response = route_action(request);
+    } on NoSuchMethodError {
+      _response = route_action();
+    }
+
+    return _response;
   }
 }
 
