@@ -1,7 +1,7 @@
 library rest_test;
 
 import 'dart:async' show Future;
-import 'dart:io' show HttpServer, HttpRequest, HttpClient;
+import 'dart:io' show HttpServer, HttpRequest;
 import 'package:http/http.dart' as http;
 
 import 'package:rest/rest.dart' as rest;
@@ -119,6 +119,18 @@ void main() {
             }),
             r'\d+': () => { 'code': 201, 'body': "requested a bat!\r\n" },
           }
+        },
+        r'^herp': {
+          null: (r) {
+            // do stuff with r
+
+            return new HttpRestResponse().build(200, "called herp!\r\n");
+          },
+          r'\d+': (r) {
+            // do stuff with r
+
+            return new HttpRestResponse().build(201, "created a herp!\r\n");
+          }
         }
       };
 
@@ -196,6 +208,39 @@ void main() {
         .then(expectAsync((response) {
           expect(response.statusCode, equals(405));
         }));
+    });
+
+    group('endpoints :::', () {
+
+      test('GET request with paramaters', () {
+        var _addr = "http://${_test_addr}:${_test_port}/herp";
+        var _test_query = "fizz=buzz&bizz=fuzz";
+
+        test_client.get(_addr+"?"+_test_query).then(
+          expectAsync((response) {
+            expect(response.statusCode, equals(200));
+          }));
+      });
+
+      test('POST request with parameters', () {
+        var _addr = "http://${_test_addr}:${_test_port}/herp";
+        var _test_query_params = { 'fizz': 'buzz', 'bizz': 'fuzz' };
+
+        test_client.put(_addr, body: _test_query_params).then(
+          expectAsync((response) {
+            expect(response.statusCode, equals(200));
+          }));
+      });
+
+      test('preserving the request', () {
+        var _addr = "http://${_test_addr}:${_test_port}/herp/123";
+        var _test_query_params = { 'fizz': 'buzz', 'bizz': 'buzz' };
+
+        test_client.put(_addr, body: _test_query_params).then(
+          expectAsync((response) {
+            expect(response.statusCode, equals(201));
+          }));
+      });
     });
   });
 }
