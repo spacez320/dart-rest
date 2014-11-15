@@ -19,7 +19,7 @@ class HttpRestResponse implements RestResponse {
   HttpRestResponse build(int code, [String body, Map headers]) {
     this.code = code;
     if(body != null) this.body = body;
-    if(headers != null) this.headers = headers;
+    this.headers = (headers == null ? {} : headers);
 
     return this;
   }

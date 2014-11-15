@@ -128,9 +128,10 @@ void main() {
           },
           r'\d+': (r) {
             // do stuff with r
-            print(r.path);
 
-            return new HttpRestResponse().build(201, "created a herp!\r\n");
+            return new HttpRestResponse().build(201,
+              "created a herp!\r\n",
+              { 'test_path': r.path, 'test_method': r.verb });
           }
         }
       };
@@ -240,6 +241,7 @@ void main() {
         test_client.put(_addr, body: _test_query_params).then(
           expectAsync((response) {
             expect(response.statusCode, equals(201));
+            expect(response.headers['test_path'], equals('/herp/123'));
           }));
       });
     });

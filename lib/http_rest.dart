@@ -114,6 +114,11 @@ class HttpRest implements Rest {
       );
     }
 
+    // add headers to the request response
+    _live_response.headers.forEach((k,v) {
+      request.response.headers.add(k, v);
+    });
+
     // populate the request response object with data
     request.response
       ..statusCode = _live_response.code
