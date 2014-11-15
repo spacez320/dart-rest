@@ -2,9 +2,13 @@ library http_rest;
 
 import 'dart:io' show HttpStatus, HttpRequest;
 import 'rest.dart' show
-  Rest, RestRoute, RestResponse, Verb, NoSuchVerbException;
+  Rest, RestRoute, RestRequest, RestResponse, Verb, NoSuchVerbException;
 
 part 'src/router.dart';
+part 'http_rest_route.dart';
+part 'http_rest_request.dart';
+part 'http_rest_response.dart';
+
 
 /**
  * An HTTP REST server.
@@ -123,92 +127,27 @@ class HttpRest implements Rest {
   dynamic act(Function route_action, HttpRequest request) {
     var _response = null;
 
-    // pass the request only if the endpoint wants it
+    // build a request object
+    final _request = new HttpRestRequest.fromRequest(request);
+
+    // attempt to give the request to the endpoint and differentiate between a
+    // NoSuchMethodError thrown by passing the request, and one that may come
+    // from the endpoint itself
     try {
-      _response = route_action(request);
+      _response = route_action(_request);
     } on NoSuchMethodError {
-      _response = route_action();
+      try {
+        _response = route_action();
+      } on NoSuchMethodError {
+        // the endpoint is throwing NoSuchMethodError, let it go
+        _response = route_action(_request);
+      }
     }
 
     return _response;
   }
 }
 
-/**
- * An HTTP REST route using available HTTP methods.
- */
-class HttpRestRoute extends RestRoute {
-
-  /// map of HTTP verbs and verb handlers
-  Map<String,Verb> verbs = {
-    'OPTIONS':  null,
-    'GET':      null,
-    'HEAD':     null,
-    'POST':     null,
-    'PUT':      null,
-    'DELETE':   null,
-    'TRACE':    null,
-    'CONNECT':  null
-  };
-
-  /**
-   * Constructs an HTTP REST route given a verb function map and optional
-   * routes.
-   */
-  HttpRestRoute(this.verbs, [routes]);
-
-  /**
-   *  Constructs an HTTP REST route from a given endpoint.
-   */
-  HttpRestRoute.fromEndpoint(Function endpoint) : this({ 'GET': endpoint });
-
-  /**
-   * Provides a response, given an HTTP REST request.
-   */
-  HttpRestResponse call(request) {
-
-    var _response = null;
-
-    // attempt to execute the verb, given the request method
-    try {
-
-      // populate the response from the verb callback
-      _response = verb(request.method);
-
-    } on NoSuchVerbException {
-
-      // respond to an unimplemented verb
-      _response = HttpRest.METHOD_NOT_ALLOWED();
-
-    }
-
-    return _response;
-  }
-}
-
-/**
- * A response to an HTTP REST request.
- */
-class HttpRestResponse implements RestResponse {
-
-  /// HTTP response code
-  int code;
-  /// HTTP response body (should be optional)
-  String body;
-  /// additional HTTP headers (should be optional)
-  Map headers;
-
-  /**
-   * Generates an HTTP REST response.
-   */
-  HttpRestResponse build(int code, [String body, Map headers]) {
-    this.code = code;
-    if(body != null) this.body = body;
-    if(headers != null) this.headers = headers;
-
-    return this;
-  }
-}
 
 /**
  * An HTTP REST verb handler for a request route.

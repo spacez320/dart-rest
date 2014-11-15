@@ -128,6 +128,7 @@ void main() {
           },
           r'\d+': (r) {
             // do stuff with r
+            print(r.path);
 
             return new HttpRestResponse().build(201, "created a herp!\r\n");
           }

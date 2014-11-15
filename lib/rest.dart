@@ -41,6 +41,15 @@ abstract class RestRoute {
 }
 
 /**
+ *  A REST request.
+ */
+abstract class RestRequest {
+
+  final String path;
+  final String verb;
+}
+
+/**
  * A response to a REST request.
  */
 abstract class RestResponse {
