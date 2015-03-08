@@ -74,26 +74,15 @@ Generally, this involves four steps.
 ```dart
       HttpServer.bind('0.0.0.0', 8000),then((server) {
         server.listen((HttpRequest request)
-          try {
 
-            // HttpRest will write and close the response to the request
-            // if it finds a useable endpoint
+          // HttpRest will write and close the response to the request.
+          rest.resolve(request);
 
-            rest.resolve(request);
-
-          } on RouteNotFoundException {
-
-            // an exception is thrown because it couldn't find an endpoint,
-            // at which point you can decide what you want to do
-
-            request.response
-              ..status = 404
-              ..close();
-
-          }
         });
       });
 ```
+
+The REST resolution will automatically take care of 400's, 404's, and 405's.
 
 - Fourthly; defining your end-point functions.
 
@@ -185,6 +174,12 @@ otherwise. Doing so is a matter of defining what verbs you want to use.
     }
 
     class YodaRestRoute extends RestRoute {
+
+      List<String> implemented_verbs = [
+        'DO',
+        'DO_NOT',
+        'TRY',
+      ];
 
       Map<String,Verb> verbs = {
         'DO':     null,
