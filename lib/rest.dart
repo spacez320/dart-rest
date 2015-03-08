@@ -19,6 +19,8 @@ abstract class Rest {
  * A REST route using available methods.
  */
 abstract class RestRoute {
+  /// list of possible verbs
+  List<String> implemented_verbs;
   /// map of verbs and verb handlers
   Map<String,Verb> verbs;
 
@@ -26,8 +28,12 @@ abstract class RestRoute {
    * Gets a verb from current verbs given a method name.
    */
   RestResponse verb(method) {
-    if(!verbs.containsKey(method))
-      throw new NoSuchVerbException(method);
+    if(!verbs.containsKey(method)) {
+      if(!implemented_verbs.contains(method))
+        throw new NoSuchVerbException(method);
+      else
+        throw new VerbNotImplementedException(method);
+    }
     return verbs[method]();
   }
 
@@ -81,4 +87,13 @@ class NoSuchVerbException implements Exception {
   final String msg;
   const NoSuchVerbException ([this.msg]);
   String toString() => "No such method ${msg}";
+}
+
+/**
+ * Exception when defining verb mappings for nonexistent methods.
+ */
+class VerbNotImplementedException implements Exception {
+  final String msg;
+  const VerbNotImplementedException ([this.msg]);
+  String toString() => "No implemented method ${msg}";
 }

@@ -5,18 +5,20 @@ part of http_rest;
  * An HTTP REST route using available HTTP methods.
  */
 class HttpRestRoute extends RestRoute {
-
   /// map of HTTP verbs and verb handlers
-  Map<String,Verb> verbs = {
-    'OPTIONS':  null,
-    'GET':      null,
-    'HEAD':     null,
-    'POST':     null,
-    'PUT':      null,
-    'DELETE':   null,
-    'TRACE':    null,
-    'CONNECT':  null
-  };
+  final List<String> implemented_verbs = [
+    'OPTIONS',
+    'GET',
+    'HEAD',
+    'POST',
+    'PUT',
+    'DELETE',
+    'TRACE',
+    'CONNECT'
+  ];
+
+  /// qualified verbs for this route
+  Map<String,Verb> verbs = {};
 
   /**
    * Constructs an HTTP REST route given a verb function map and optional
@@ -33,17 +35,8 @@ class HttpRestRoute extends RestRoute {
    * Provides a response, given an HTTP REST request.
    */
   HttpRestResponse call(HttpRestRequest request) {
-
-    var _response = null;
-
-    // attempt to execute the verb, given the request method
-    try {
-      // populate the response from the verb callback
-      _response = verb(request.verb);
-    } on NoSuchVerbException {
-      // respond to an unimplemented verb
-      _response = HttpRest.METHOD_NOT_ALLOWED();
-    }
+    // populate the response from the verb callback
+    var _response = verb(request.verb);
 
     return _response;
   }

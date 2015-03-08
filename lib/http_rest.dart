@@ -2,7 +2,8 @@ library http_rest;
 
 import 'dart:io' show HttpStatus, HttpRequest;
 import 'rest.dart' show
-  Rest, RestRoute, RestRequest, RestResponse, Verb, NoSuchVerbException;
+  Rest, RestRoute, RestRequest, RestResponse, Verb,
+  NoSuchVerbException, VerbNotImplementedException;
 
 part 'src/router.dart';
 part 'http_rest_route.dart';
@@ -38,6 +39,12 @@ class HttpRest implements Rest {
     new HttpRestResponse().build(HttpStatus.NO_CONTENT);
 
   /* 400's */
+
+  /**
+   *  Returns HTTP 400 Bad Request
+   */
+  static HttpRestResponse BAD_REQUEST() =>
+    new HttpRestResponse().build(HttpStatus.BAD_REQUEST);
 
   /**
    *  Returns HTTP 401 Unauthorized
@@ -111,8 +118,12 @@ class HttpRest implements Rest {
           _response_data['headers']
         );
       }
-    } on RouteNotFoundException {
+    }on RouteNotFoundException {
       _live_response = HttpRest.NOT_FOUND();
+    } on NoSuchVerbException {
+      _live_response = HttpRest.BAD_REQUEST();
+    } on VerbNotImplementedException {
+      _live_response = HttpRest.METHOD_NOT_ALLOWED();
     }
 
     // add headers to the request response

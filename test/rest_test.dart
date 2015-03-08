@@ -10,14 +10,11 @@ import 'package:unittest/unittest.dart';
 import 'src/rest_test_util.dart';
 
 void main() {
-
   group('Router :::', () {
-
     var test_routes = {};
     var test_router = null;
 
     setUp(() {
-
       test_routes = {
         r'foo': RestTestUtil.returnTrue,
         r'biz': {
@@ -46,7 +43,6 @@ void main() {
     });
 
     group('resolve :::', () {
-
       var test_router_compilation = null;
       var test_endpoint = null;
 
@@ -91,7 +87,6 @@ void main() {
   });
 
   group('HTTP Rest :::', () {
-
     var _test_addr = '127.0.0.1';
     var _test_port = 33133;
 
@@ -101,7 +96,6 @@ void main() {
     var test_client = null;
 
     setUp(() {
-
       // server setup
 
       test_routes = {
@@ -206,7 +200,17 @@ void main() {
         }));
     });
 
-    test('requesting an undefined verb gives 405', () {
+    test('requesting an unknown verb gives 400', () {
+      var _request = new http.Request('herp',
+        new Uri.http("${_test_addr}:${_test_port}", "/bar"));
+
+      test_client.send(_request)
+        .then(expectAsync((response) {
+          expect(response.statusCode, equals (400));
+        }));
+    });
+
+    test('requesting an unimplemented verb on a defined path gives 405', () {
       test_client.head("http://${_test_addr}:${_test_port}/bar")
         .then(expectAsync((response) {
           expect(response.statusCode, equals(405));
@@ -214,7 +218,6 @@ void main() {
     });
 
     group('endpoints :::', () {
-
       test('GET request with paramaters', () {
         var _addr = "http://${_test_addr}:${_test_port}/herp";
         var _test_query = "fizz=buzz&bizz=fuzz";
