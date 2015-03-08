@@ -1,8 +1,7 @@
 name: rest
-version: 0.2.4
+version: 0.2.5
 description: >
-  This is a helper for creating RESTful applications. It also comes equipped
-  with an implementation for HTTP REST.
+  REST application helper.
 author: Matthew Coleman <mcoleman@eudaimonia.com>
 homepage: https://github.com/spacez320/dart-rest
 environment:
