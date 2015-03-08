@@ -14,7 +14,6 @@ part 'http_rest_response.dart';
  * An HTTP REST server.
  */
 class HttpRest implements Rest {
-
   /// the routing engine
   Router rest_router;
 
@@ -77,12 +76,10 @@ class HttpRest implements Rest {
    *  Resolves an HTTP Rest Request.
    */
   HttpRestResponse resolve(HttpRequest request) {
-
-    /// the response object to be returned
-    var _live_response = null;
     /// the actual response object retrieved
     var _response = null;
-
+    /// the response object to be returned
+    var _live_response = null;
     /// default response data
     var _response_data = {
       'code'    : 200,
@@ -115,7 +112,7 @@ class HttpRest implements Rest {
     }
 
     // add headers to the request response
-    _live_response.headers.forEach((k,v) {
+    _live_response.headers.forEach((k, v) {
       request.response.headers.add(k, v);
     });
 

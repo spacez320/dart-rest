@@ -5,7 +5,6 @@ part of http_rest;
  * A response to an HTTP REST request.
  */
 class HttpRestResponse implements RestResponse {
-
   /// HTTP response code
   int code;
   /// HTTP response body (should be optional)

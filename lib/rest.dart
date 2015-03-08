@@ -1,6 +1,5 @@
 library rest;
 
-import 'dart:io' show HttpStatus, HttpRequest;
 import 'dart:async' show Future, getFuture;
 
 part 'src/router.dart';
@@ -10,7 +9,6 @@ part 'src/router.dart';
  * A REST server.
  */
 abstract class Rest {
-
   /**
    *  Resolves a REST request.
    */
@@ -21,7 +19,6 @@ abstract class Rest {
  * A REST route using available methods.
  */
 abstract class RestRoute {
-
   /// map of verbs and verb handlers
   Map<String,Verb> verbs;
 
@@ -44,7 +41,6 @@ abstract class RestRoute {
  *  A REST request.
  */
 abstract class RestRequest {
-
   final String path;
   final String verb;
 }
@@ -63,7 +59,6 @@ abstract class RestResponse {
  * A REST verb handler for a request route.
  */
 abstract class Verb {
-
   /// Response handler for this verb.
   final Function callback;
 

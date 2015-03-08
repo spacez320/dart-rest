@@ -5,7 +5,6 @@ part of http_rest;
  * A response to an HTTP REST request.
  */
 class HttpRestRequest implements RestRequest {
-
   /// request uri
   final String path;
   /// request method
@@ -18,6 +17,9 @@ class HttpRestRequest implements RestRequest {
    */
   const HttpRestRequest(this.path, this.verb, this.headers);
 
+  /**
+   * Generates an HTTP REST request from an HttpRequest.
+   */
   const HttpRestRequest.fromRequest(HttpRequest request) :
     this(request.uri, request.method, request.headers);
 }

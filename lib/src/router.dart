@@ -4,7 +4,6 @@ part of rest;
  * A route manager for resolving URIs to functional endpoints.
  */
 class Router {
-
   /// routing map
   Map _routes = {};
 
@@ -51,7 +50,6 @@ class Router {
    *  @returns  Map   A compiled routing map.
    */
   Map compile(route_map) {
-
     // resultant compiled route object
     var _compiled_routes = {};
 
@@ -87,21 +85,17 @@ class Router {
    *  @throws   RouteNotFoundException
    */
   Function resolve(request_uri) {
-
     /**
      *  Depth-first search.
      */
     dynamic resolveRoutes(routes, request_uri) {
-
       // remove the leading slash
       var _request_uri = request_uri.replaceFirst(new RegExp(r'/'), '');
       var _modified_request = '';
 
       for(var route in routes.keys) {
-
         // find a match in the given routes
         if(route != null && route.hasMatch(_request_uri)) {
-
           // process request substring
           _modified_request =
             _request_uri.substring(route.firstMatch(_request_uri).end);

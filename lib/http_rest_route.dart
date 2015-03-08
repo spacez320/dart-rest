@@ -38,15 +38,11 @@ class HttpRestRoute extends RestRoute {
 
     // attempt to execute the verb, given the request method
     try {
-
       // populate the response from the verb callback
       _response = verb(request.verb);
-
     } on NoSuchVerbException {
-
       // respond to an unimplemented verb
       _response = HttpRest.METHOD_NOT_ALLOWED();
-
     }
 
     return _response;
