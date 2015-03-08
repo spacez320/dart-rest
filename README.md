@@ -13,13 +13,12 @@ Example
         r"^foo": {
           r"^bar$": {
             r"\d+": new HttpRestRoute({
-              'GET': getFooBar         // a function called createFooBar
+              'GET': getFooBar
             }),
           }),
         }
       };
 
-      // create the rest object itself
       HttpRest rest = new HttpRest(routes);
 
       HttpServer.bind('0.0.0.0', 8000),then((server) {
@@ -29,7 +28,7 @@ Example
       });
 
       getFooBar() {
-        return new HttpRestResponse().build(204, 'created a fooBar!\n');
+        return new HttpRestResponse().build(204, 'found a fooBar!\n');
       }
 ```
 
