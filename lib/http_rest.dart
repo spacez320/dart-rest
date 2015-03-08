@@ -88,27 +88,31 @@ class HttpRest implements Rest {
     };
 
     // resolve the action
-    var _route_action = this.rest_router.resolve(request.uri.path);
+    try {
+      var _route_action = this.rest_router.resolve(request.uri.path);
 
-    // perform the action and generate the response
-    _response = this.act(_route_action, request);
+      // perform the action and generate the response
+      _response = this.act(_route_action, request);
 
-    if(_response is HttpRestResponse) {
-      // looks like the response is already prepared
-      _live_response = _response;
-    } else {
-      // response is some other type of value
-      if(_response is Map) {
-        _response_data.addAll(_response);
+      if(_response is HttpRestResponse) {
+        // looks like the response is already prepared
+        _live_response = _response;
       } else {
-        _response_data['body'] = _response.toString();
-      }
+        // response is some other type of value
+        if(_response is Map) {
+          _response_data.addAll(_response);
+        } else {
+          _response_data['body'] = _response.toString();
+        }
 
-      _live_response = new HttpRestResponse().build(
-        _response_data['code'],
-        _response_data['body'],
-        _response_data['headers']
-      );
+        _live_response = new HttpRestResponse().build(
+          _response_data['code'],
+          _response_data['body'],
+          _response_data['headers']
+        );
+      }
+    } on RouteNotFoundException {
+      _live_response = HttpRest.NOT_FOUND();
     }
 
     // add headers to the request response

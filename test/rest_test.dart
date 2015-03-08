@@ -143,13 +143,7 @@ void main() {
       return HttpServer.bind(_test_addr, _test_port).then((server) {
         test_server = server;
         server.listen((HttpRequest request) {
-          try {
-            test_rest.resolve(request);
-          } on RouteNotFoundException {
-            request.response
-              ..statusCode = 404
-              ..close();
-          }
+          test_rest.resolve(request);
         });
       });
     });
@@ -203,6 +197,13 @@ void main() {
             expect(response.statusCode, equals(201));
             expect(response.body, equals("requested a bat!\r\n"));
           }));
+    });
+
+    test('requesting an undefined path gives 404', () {
+      test_client.get("http://${_test_addr}:${_test_port}/whatever")
+        .then(expectAsync((response) {
+          expect(response.statusCode, equals (404));
+        }));
     });
 
     test('requesting an undefined verb gives 405', () {

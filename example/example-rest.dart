@@ -6,7 +6,11 @@ import 'dart:io' show
 import "../lib/http_rest.dart" show
   HttpRest, HttpRestRoute, HttpRestResponse, RouteNotFoundException;
 
+
 void main() {
+
+  var address = '127.0.0.1';
+  var port = 8000;
 
   var routes = {
     r"^foo": {
@@ -20,32 +24,29 @@ void main() {
     }
   };
 
+  print("Generating REST routes...");
   HttpRest rest = new HttpRest(routes);
 
-  HttpServer.bind('127.0.0.1', 8000).then((server) {
+  HttpServer.bind(address, port).then((server) {
+    print("Starting the REST server on ${address}:${port}.");
     server.listen((HttpRequest request) {
-      try {
+      print("I got a ${request.method} request for ${request.uri.path}!");
 
-        // rest will write and close the response to the request if it finds
-        // a successful endpoint from routes
-        rest.resolve(request);
+      // rest will write and close the response to the request if it finds
+      // a successful endpoint from routes
+      rest.resolve(request);
 
-      } on RouteNotFoundException {
-
-        // the rest route didn't endpoint, so do whatever you like
-        // throw a 404, provide other server functionality, whatevs
-        // but always remember to
-        request.response.close();
-
-      }
+      print("I got a response of ${request.response.statusCode}.");
     });
   });
 }
+
 
 fooBar() {
   // this is just a test function
   return new HttpRestResponse().build(200, "called fooBar!\n");
 }
+
 
 fooBat() {
   // another test function endpoint
