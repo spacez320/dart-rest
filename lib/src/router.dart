@@ -51,10 +51,10 @@ class Router {
    */
   Map compile(route_map) {
     // resultant compiled route object
-    var _compiled_routes = {};
+    Map _compiled_routes = {};
 
     // loop over given routes in map and compile them
-    var _next_route_regexp = null;
+    RegExp _next_route_regexp = null;
     var _next_route_val = null;
     for(var route in route_map.keys) {
       _next_route_regexp = route == null ? null : new RegExp(route);
@@ -88,10 +88,10 @@ class Router {
     /**
      *  Depth-first search.
      */
-    dynamic resolveRoutes(routes, request_uri) {
+    Function resolveRoutes(routes, request_uri) {
       // remove the leading slash
-      var _request_uri = request_uri.replaceFirst(new RegExp(r'/'), '');
-      var _modified_request = '';
+      String _request_uri = request_uri.replaceFirst(new RegExp(r'/'), '');
+      String _modified_request = '';
 
       for(var route in routes.keys) {
         // find a match in the given routes
@@ -112,17 +112,14 @@ class Router {
         }
       }
 
-      // false if no endpoint was ever returned
-      return false;
+      // if no endpoint was ever returned
+      throw new RouteNotFoundException(request_uri);
     }
 
     // resolve the route
-    var _route_action = resolveRoutes(this._routes, request_uri);
+    Function _endpoint = resolveRoutes(this._routes, request_uri);
 
-    // determine if the endpoint is actionable
-    if(_route_action is Function) {
-      return _route_action;
-    } else throw new RouteNotFoundException(request_uri);
+    return _endpoint;
   }
 }
 

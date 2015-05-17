@@ -6,21 +6,46 @@ part of http_rest;
  */
 class HttpRestResponse implements RestResponse {
   /// HTTP response code
-  int code;
-  /// HTTP response body (should be optional)
-  String body;
-  /// additional HTTP headers (should be optional)
-  Map headers;
+  final int code;
+  /// HTTP response body (optional)
+  final String body;
+  /// additional HTTP headers (optional)
+  final Map headers;
 
   /**
    * Generates an HTTP REST response.
    */
-  HttpRestResponse build(int code, [String body, Map headers]) {
-    this.code = code;
-    if(body != null) this.body = body;
-    this.headers = (headers == null ? {} : headers);
+  const HttpRestResponse(this.code, [this.body = '', this.headers = const {}]);
 
-    return this;
+  /**
+   * Generates an HTTP REST response from a Map.
+   */
+  const HttpRestResponse.fromMap(Map response) :
+    this(
+      response['code'],
+      response['body'] == null ? '' : response['body'],
+      response['headers'] == null ? {} : response['headers']);
+
+  /**
+   * Generates an HTTP REST response from a generic object's toString().
+   */
+  const HttpRestResponse.fromGeneric(dynamic response) :
+    this(200, response.toString(), {});
+
+  /**
+   * Generator designed to interpret endpoint responses.
+   */
+  factory HttpRestResponse.build(dynamic response) {
+    if(response is HttpRestResponse) {
+      // looks like the response is already prepared
+      return response;
+    } else if(response is Map) {
+      // response is a Map
+      return new HttpRestResponse.fromMap(response);
+    } else {
+      // response is some other type of value
+      return new HttpRestResponse.fromGeneric(response);
+    }
   }
 }
 

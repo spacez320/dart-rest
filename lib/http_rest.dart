@@ -1,6 +1,6 @@
 library http_rest;
 
-import 'dart:io' show HttpStatus, HttpRequest;
+import 'dart:io' show HttpStatus, HttpRequest, HttpHeaders;
 import 'rest.dart' show
   Rest, RestRoute, RestRequest, RestResponse, Verb,
   NoSuchVerbException, VerbNotImplementedException;
@@ -24,19 +24,19 @@ class HttpRest implements Rest {
    *  Returns HTTP 200 OK
    */
   static HttpRestResponse OK() =>
-    new HttpRestResponse().build(HttpStatus.OK);
+    new HttpRestResponse(HttpStatus.OK);
 
   /**
    *  Returns HTTP 201 Created
    */
   static HttpRestResponse CREATED() =>
-    new HttpRestResponse().build(HttpStatus.CREATED);
+    new HttpRestResponse(HttpStatus.CREATED);
 
   /**
    *  Returns HTTP 204 No Content
    */
   static HttpRestResponse NO_CONTENT() =>
-    new HttpRestResponse().build(HttpStatus.NO_CONTENT);
+    new HttpRestResponse(HttpStatus.NO_CONTENT);
 
   /* 400's */
 
@@ -44,25 +44,25 @@ class HttpRest implements Rest {
    *  Returns HTTP 400 Bad Request
    */
   static HttpRestResponse BAD_REQUEST() =>
-    new HttpRestResponse().build(HttpStatus.BAD_REQUEST);
+    new HttpRestResponse(HttpStatus.BAD_REQUEST);
 
   /**
    *  Returns HTTP 401 Unauthorized
    */
   static HttpRestResponse UNAUTHORIZED() =>
-    new HttpRestResponse().build(HttpStatus.UNAUTHORIZED);
+    new HttpRestResponse(HttpStatus.UNAUTHORIZED);
 
   /**
    *  Returns HTTP 405 Method Not Allowed
    */
   static HttpRestResponse METHOD_NOT_ALLOWED() =>
-    new HttpRestResponse().build(HttpStatus.METHOD_NOT_ALLOWED);
+    new HttpRestResponse(HttpStatus.METHOD_NOT_ALLOWED);
 
   /**
    *  Returns HTTP 404 Not Found
    */
   static HttpRestResponse NOT_FOUND() =>
-    new HttpRestResponse().build(HttpStatus.NOT_FOUND);
+    new HttpRestResponse(HttpStatus.NOT_FOUND);
 
   /* 500's */
 
@@ -70,7 +70,7 @@ class HttpRest implements Rest {
    *  Returns HTTP 501 Not Implemented
    */
   static HttpRestResponse NOT_IMPLEMENTED() =>
-    new HttpRestResponse().build(HttpStatus.NOT_IMPLEMENTED);
+    new HttpRestResponse(HttpStatus.NOT_IMPLEMENTED);
 
   /**
    *  Constructs an HttpRest object from provided routes.
@@ -80,58 +80,41 @@ class HttpRest implements Rest {
   }
 
   /**
-   *  Resolves an HTTP Rest Request.
+   *  Resolves an HTTP REST request from a client.
    */
   HttpRestResponse resolve(HttpRequest request) {
-    /// the actual response object retrieved
-    var _response = null;
-    /// the response object to be returned
+    /// the actual response object retrieved from the endpoint
+    var _endpoint_response = null;
+    /// the response object to build the actual response
     var _live_response = null;
-    /// default response data
-    var _response_data = {
-      'code'    : 200,
-      'body'    : null,
-      'headers' : null,
-    };
 
-    // resolve the action
     try {
-      var _route_action = this.rest_router.resolve(request.uri.path);
+      // resolve the endpoint
+      Function _endpoint = this.rest_router.resolve(request.uri.path);
 
-      // perform the action and generate the response
-      _response = this.act(_route_action, request);
+      // perform the endpoint and generate the response
+      _endpoint_response = this.act(_endpoint, request);
 
-      if(_response is HttpRestResponse) {
-        // looks like the response is already prepared
-        _live_response = _response;
-      } else {
-        // response is some other type of value
-        if(_response is Map) {
-          _response_data.addAll(_response);
-        } else {
-          _response_data['body'] = _response.toString();
-        }
+      // interpret and generate the endpoint response
+      _live_response = new HttpRestResponse.build(_endpoint_response);
 
-        _live_response = new HttpRestResponse().build(
-          _response_data['code'],
-          _response_data['body'],
-          _response_data['headers']
-        );
-      }
-    }on RouteNotFoundException {
+    } on RouteNotFoundException {
+      // we could not find a route based on the request
       _live_response = HttpRest.NOT_FOUND();
     } on NoSuchVerbException {
+      // the request tried to use an unknown method
       _live_response = HttpRest.BAD_REQUEST();
     } on VerbNotImplementedException {
+      // the request tried to use a known but undefined method
       _live_response = HttpRest.METHOD_NOT_ALLOWED();
     }
 
-    // add headers to the request response
+    // populate the request response object with data
+
     _live_response.headers.forEach((k, v) {
       request.response.headers.add(k, v);
     });
 
-    // populate the request response object with data
     request.response
       ..statusCode = _live_response.code
       ..write(_live_response.body != null ? _live_response.body : '')
@@ -139,25 +122,27 @@ class HttpRest implements Rest {
   }
 
   /**
-   * Wraps route_action calls.
+   * Wraps endpoint calls.
    */
-  dynamic act(Function route_action, HttpRequest request) {
+  dynamic act(Function endpoint, HttpRequest request) {
+    /// response retrieved from the endpoint
     var _response = null;
 
     // build a request object
-    final _request = new HttpRestRequest.fromRequest(request);
+    final HttpRestRequest _request =
+      new HttpRestRequest.fromHttpRequest(request);
 
     // attempt to give the request to the endpoint and differentiate between a
     // NoSuchMethodError thrown by passing the request, and one that may come
     // from the endpoint itself
     try {
-      _response = route_action(_request);
+      _response = endpoint(_request);
     } on NoSuchMethodError {
       try {
-        _response = route_action();
+        _response = endpoint();
       } on NoSuchMethodError {
         // the endpoint is throwing NoSuchMethodError, let it go
-        _response = route_action(_request);
+        _response = endpoint(_request);
       }
     }
 

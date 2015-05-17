@@ -20,7 +20,13 @@ void main() {
       r"^bat$": new HttpRestRoute({
         'POST': fooBat,
         'GET': HttpRest.NO_CONTENT
-      })
+      }),
+      r'^biz': new HttpRestRoute({
+        'GET': HttpRest.CREATED,
+        'POST': () => new HttpRestResponse(201, "called bar!\r\n"),
+        'PUT': () => { 'code': 201, 'body': "called bar!\r\n" },
+        'DELETE': () => "called bar!\r\n",
+      }),
     }
   };
 
@@ -42,13 +48,8 @@ void main() {
 }
 
 
-fooBar() {
-  // this is just a test function
-  return new HttpRestResponse().build(200, "called fooBar!\n");
-}
+// this is just a test function
+fooBar() => new HttpRestResponse(200, "called fooBar!\n");
 
-
-fooBat() {
-  // another test function endpoint
-  return new HttpRestResponse().build(201, "called fooBat!\n");
-}
+// another test function
+fooBat() => new HttpRestResponse(201, "called fooBat!\n");

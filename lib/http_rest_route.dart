@@ -5,7 +5,7 @@ part of http_rest;
  * An HTTP REST route using available HTTP methods.
  */
 class HttpRestRoute extends RestRoute {
-  /// map of HTTP verbs and verb handlers
+  /// known HTTP methods
   final List<String> implemented_verbs = [
     'OPTIONS',
     'GET',
@@ -17,14 +17,13 @@ class HttpRestRoute extends RestRoute {
     'CONNECT'
   ];
 
-  /// qualified verbs for this route
-  Map<String,Verb> verbs = {};
+  /// map of possible HTTP verbs and verb handlers
+  Map<String,HttpVerb> verbs = {};
 
   /**
-   * Constructs an HTTP REST route given a verb function map and optional
-   * routes.
+   * Constructs an HttpRestRoute given a verb function map.
    */
-  HttpRestRoute(this.verbs, [routes]);
+  HttpRestRoute(this.verbs);
 
   /**
    *  Constructs an HTTP REST route from a given endpoint.
@@ -34,7 +33,7 @@ class HttpRestRoute extends RestRoute {
   /**
    * Provides a response, given an HTTP REST request.
    */
-  HttpRestResponse call(HttpRestRequest request) {
+  dynamic call(HttpRestRequest request) {
     // populate the response from the verb callback
     var _response = verb(request.verb);
 

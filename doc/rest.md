@@ -88,15 +88,15 @@ The REST resolution will automatically take care of 400's, 404's, and 405's.
 
 ```dart
       fooBar() {
-        return new HttpRestResponse().build(200, 'fooBar!\n');
+        return new HttpRestResponse(200, 'fooBar!\n');
       }
 
       createFooBar() {
-        return new HttpRestResponse().build(204, 'created a fooBar!\n');
+        return new HttpRestResponse(204, 'created a fooBar!\n');
       }
 
       fooBat() {
-        return new HttpRestResponse().build(502, 'fooBat!\n');
+        return new HttpRestResponse(502, 'fooBat!\n');
       }
 ```
 
@@ -125,7 +125,7 @@ Some key points:
 
 ### On Endpoint Functions
 
-Notice that the examples above are building `HttpRestResponse` objects.
+Notice that the examples above are creating `HttpRestResponse` objects.
 Your endpoint functions can;
 
 - also do this,
@@ -134,7 +134,7 @@ Your endpoint functions can;
         myEndpoint() {
           var my_response = "stuff and things\n";
 
-          return new HttpRestResponse().build(200, my_response);
+          return new HttpRestResponse(200, my_response);
         }
 ```
 

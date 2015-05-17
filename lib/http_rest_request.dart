@@ -2,7 +2,7 @@ part of http_rest;
 
 
 /**
- * A response to an HTTP REST request.
+ * An HTTP REST request.
  */
 class HttpRestRequest implements RestRequest {
   /// request uri
@@ -10,7 +10,7 @@ class HttpRestRequest implements RestRequest {
   /// request method
   final String verb;
   /// request headers
-  final Map headers;
+  final HttpHeaders headers;
 
   /**
    * Generates an HTTP REST request.
@@ -20,7 +20,7 @@ class HttpRestRequest implements RestRequest {
   /**
    * Generates an HTTP REST request from an HttpRequest.
    */
-  const HttpRestRequest.fromRequest(HttpRequest request) :
-    this(request.uri, request.method, request.headers);
+  const HttpRestRequest.fromHttpRequest(HttpRequest request) :
+    this(request.uri.toString(), request.method, request.headers);
 }
 

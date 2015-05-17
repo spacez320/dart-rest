@@ -27,7 +27,7 @@ abstract class RestRoute {
   /**
    * Gets a verb from current verbs given a method name.
    */
-  RestResponse verb(method) {
+  dynamic verb(method) {
     if(!verbs.containsKey(method)) {
       if(!implemented_verbs.contains(method))
         throw new NoSuchVerbException(method);
@@ -54,12 +54,7 @@ abstract class RestRequest {
 /**
  * A response to a REST request.
  */
-abstract class RestResponse {
-  /**
-   * Generates a REST response.
-   */
-  void build(dynamic response);
-}
+abstract class RestResponse {}
 
 /**
  * A REST verb handler for a request route.
@@ -69,10 +64,8 @@ abstract class Verb {
   final Function callback;
 
   /// Constructor that produces the verb action.
-  Verb(callback) {
-    this.callback = callback is Function ?
-      callback : () { return callback; };
-  }
+  Verb(this.callback = callback is Function ?
+    callback : () { return callback; });
 
   /**
    * Calls the response handler.

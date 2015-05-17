@@ -1,7 +1,7 @@
 library rest_test;
 
 import 'dart:async' show Future;
-import 'dart:io' show HttpServer, HttpRequest;
+import 'dart:io' show HttpServer, HttpRequest, Uri;
 import 'package:http/http.dart' as http;
 
 import 'package:rest/rest.dart' as rest;
@@ -102,7 +102,7 @@ void main() {
         r'^foo': HttpRest.OK,
         r'^bar': new HttpRestRoute({
           'GET': HttpRest.CREATED,
-          'POST': () => new HttpRestResponse().build(201, "called bar!\r\n"),
+          'POST': () => new HttpRestResponse(201, "called bar!\r\n"),
           'PUT': () => { 'code': 201, 'body': "called bar!\r\n" },
           'DELETE': () => "called bar!\r\n",
         }),
@@ -118,12 +118,12 @@ void main() {
           null: (r) {
             // do stuff with r
 
-            return new HttpRestResponse().build(200, "called herp!\r\n");
+            return new HttpRestResponse(200, "called herp!\r\n");
           },
           r'\d+': (r) {
             // do stuff with r
 
-            return new HttpRestResponse().build(201,
+            return new HttpRestResponse(201,
               "created a herp!\r\n",
               { 'test_path': r.path, 'test_method': r.verb });
           }
@@ -149,6 +149,18 @@ void main() {
     test('using HttpRest status constant 200', () {
       test_client.get("http://${_test_addr}:${_test_port}/foo")
         .then(expectAsync((response) {
+          expect(response.statusCode, equals(200));
+        }));
+    });
+
+    test('using a Uri object for the request', () {
+      var uri = new Uri(
+        scheme: 'http',
+        host: _test_addr,
+        path: '/foo',
+        port: _test_port);
+      test_client
+        ..get(uri).then(expectAsync((response) {
           expect(response.statusCode, equals(200));
         }));
     });

@@ -7,8 +7,18 @@ Example
 -------
 
 ```dart
-      import 'rest:rest/http_rest.dart' show HttpRest, HttpRestRoute;
+      // import the library
+      import 'rest:rest/http_rest.dart' show
+        HttpRest, HttpRestResponse, HttpRestRoute;
 
+      // make a function that will return some REST response
+      getFooBar() {
+        return new HttpRestResponse(204, 'found a fooBar!\n');
+      }
+
+      // create a map to define your API -- here we define a path that would
+      // respond to something like;
+      // GET /foo/bar/20 HTTP/1.1
       var routes = {
         r"^foo": {
           r"^bar$": {
@@ -19,17 +29,15 @@ Example
         }
       };
 
+      // this will resolve your HTTP requests
       HttpRest rest = new HttpRest(routes);
 
+      // build a server as normal, pass requests to the resolver
       HttpServer.bind('0.0.0.0', 8000),then((server) {
         server.listen((HttpRequest request)
           rest.resolve(request);
         });
       });
-
-      getFooBar() {
-        return new HttpRestResponse().build(204, 'found a fooBar!\n');
-      }
 ```
 
 Documentation
