@@ -3,6 +3,8 @@ rest
 
 A Dart library for creating REST applications.
 
+[![Build Status](https://drone.io/github.com/spacez320/dart-rest/status.png)](https://drone.io/github.com/spacez320/dart-rest/latest)
+
 Example
 -------
 
