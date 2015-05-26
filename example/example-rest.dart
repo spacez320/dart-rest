@@ -3,7 +3,7 @@ library http_rest_example;
 import 'dart:io' show
   HttpServer, HttpRequest;
 
-import "../lib/http_rest.dart" show
+import "package:rest/http_rest.dart" show
   HttpRest, HttpRestRoute, HttpRestResponse, RouteNotFoundException;
 
 

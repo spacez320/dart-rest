@@ -1,12 +1,10 @@
-name: rest
-version: 0.3.1
+name: example-rest
+version: 0.0.0
 description: >
-  HTTP REST and general REST application framework.
+  Just an example application to show off dart-rest.
 author: Matthew Coleman <matthew@eudaimonia.com>
 homepage: https://github.com/spacez320/dart-rest
 environment:
   sdk: '>=1.3.0'
 dependencies:
-  http: '>=0.11.1 <0.12.0'
-dev_dependencies:
-  unittest: '>=0.11.5< 0.12.0'
+  rest: '>0.0.1'
